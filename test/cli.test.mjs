@@ -5,6 +5,7 @@ import { Readable } from "node:stream";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { INPUTS, OUTPUTS, exampleFetch, exampleOutput } from "../examples/fixture.mjs";
+import * as reportExports from "../src/report.mjs";
 import { KEY_ENV, runCli } from "./helpers/run.mjs";
 
 // The examples are run by their relative paths so the output matches the files in examples/.
@@ -16,7 +17,7 @@ test("--dry-run prints the questions and a token estimate and sends nothing, eve
   assert.equal(text.code, 0);
   assert.match(text.out, /\(dry run: nothing was sent\)/);
   assert.match(text.out, /Would send 1 request to https:\/\/api\.typesafe\.ai\/v1\/systemone with model jev-latest/);
-  assert.match(text.out, /Estimated total: about [\d,]+ input tokens, about \$0\.000\d+ at \$0\.042 per million input tokens/);
+  assert.match(text.out, /^Estimated total: about [\d,]+ input tokens$/m);
   assert.match(text.out, /g01_cause \(choice\): What most likely caused the failures in `groups\.g01`\?/);
   assert.match(text.out, /g01_retry \(noul\): Is it safe to run the actions in `groups\.g01` again as they are/);
   assert.match(text.out, /g01_urgency \(score\): How soon should someone deal with the failures in `groups\.g01`\?/);
@@ -82,6 +83,22 @@ test("the text report has an overview most urgent first, then the three lists an
   assert.match(out, /Review: safe to run again 0\.64, between 0\.20 and 0\.80\./);
   assert.match(out, /After the fix, check that it is scheduled again: wp action-scheduler action list --hook=example_reports_rebuild/);
   assert.doesNotMatch(out, /customer\d@example\.com|jane\.doe@example\.com/, "no email address from the export is printed");
+});
+
+test("every output gives token counts only, with no dollar cost, rate or price constant", async () => {
+  const { fetchImpl } = exampleFetch();
+  const outputs = {};
+  for (const args of [[], ["--json"], ["--dry-run"], ["--dry-run", "--json"]]) {
+    const { code, out } = await runCli([...INPUTS, ...args], { env: KEY_ENV, fetchImpl });
+    assert.equal(code, 0);
+    assert.doesNotMatch(out, /\$\s?\d|per million|cost/i, `output with options [${args.join(" ")}]`);
+    outputs[args.join(" ")] = out;
+  }
+  assert.match(outputs[""], /^Jev: model fixture, 1 request, [\d,]+ input tokens$/m);
+  assert.match(outputs["--dry-run"], /^Estimated total: about [\d,]+ input tokens$/m);
+  assert.ok(JSON.parse(outputs["--json"]).usage.input_tokens > 0);
+  assert.ok(JSON.parse(outputs["--dry-run --json"]).estimated_input_tokens > 0);
+  assert.deepEqual(Object.keys(reportExports).filter((name) => /price|cost/i.test(name)), [], "src/report.mjs exports no price or cost");
 });
 
 test("reads an export from standard input when the file is -", async () => {

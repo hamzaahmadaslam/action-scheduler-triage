@@ -167,7 +167,7 @@ Input: examples/failed-actions.json, examples/past-due-actions.json
 Actions: 87 failed in 12 groups, 9 past due in 2 groups
 Skipped: 1 action with another status (1 canceled)
 Failed between 2026-09-18 03:10 and 2026-09-25 18:30 UTC
-Jev: model fixture, 1 request, 13,592 input tokens (about $0.00057)
+Jev: model fixture, 1 request, 13,592 input tokens
 Threshold 0.80: 3 safe to retry, 7 fix first, 2 for review
 
 Failed groups, most urgent first
@@ -289,16 +289,15 @@ on your machine and never sent. The tool makes no other network requests, such a
 - TypeSafe's notes on jev-1.13 say accuracy falls as the state fills with detail unrelated to a question, and a
   request here can hold about 50 groups. If answers look off, send fewer groups per request with `--batch`.
 
-## Cost
+## Token use
 
-TypeSafe charges $0.042 per million input tokens for jev-1.13, and output tokens are free. The tool estimates about
-1,130 input tokens per group, most of it the text of the three questions. The example's 12 groups are one request of
-about 13,600 tokens, about $0.0006. A test export with 204 distinct groups (1,479 failed actions) was about 230,000
-tokens in 4 requests, about $0.0096. Run `--dry-run` first to see the estimate for your own export.
+The tool estimates about 1,130 input tokens per group, most of it the text of the three questions. The example's 12
+groups are one request of about 13,600 tokens. A test export with 204 distinct groups (1,479 failed actions) was
+about 230,000 tokens in 4 requests. Run `--dry-run` first to see the estimate for your own export.
 
 ## Development
 
-`npm test` runs 25 tests with Node's test runner. They need no key: a fixture stands in for Jev, and any attempt to
+`npm test` runs 26 tests with Node's test runner. They need no key: a fixture stands in for Jev, and any attempt to
 reach the network fails the test. `npm run example` rebuilds the files in `examples/`, and a test checks that they
 match the code.
 

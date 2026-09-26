@@ -6,7 +6,7 @@ Failed between 2026-09-18 03:10 and 2026-09-25 18:30 UTC
 
 Would send 1 request to https://api.typesafe.ai/v1/systemone with model jev-latest:
   request 1: 12 groups, about 13,592 input tokens
-Estimated total: about 13,592 input tokens, about $0.00057 at $0.042 per million input tokens
+Estimated total: about 13,592 input tokens
 
 Questions for each group (shown for g01; every group gets the same three under its own key):
 

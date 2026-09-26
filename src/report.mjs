@@ -7,8 +7,6 @@ import { JEV_ENDPOINT } from "./jev.mjs";
 import { CAUSES, RETRY_CRITERIA, URGENCY, URGENCY_LABELS, questionsFor, stateFor } from "./questions.mjs";
 
 export const VERSION = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version;
-// USD per million input tokens for jev-1.13 (TypeSafe's models page, 2026-09-26). Output tokens are free.
-export const PRICE_PER_MILLION = 0.042;
 /** Retry commands printed per group in the text report; the JSON report has all of them. */
 export const COMMANDS_SHOWN = 10;
 const IDS_SHOWN = 5;
@@ -39,16 +37,6 @@ const plural = (n, one, many = `${one}s`) => `${int(n)} ${n === 1 ? one : many}`
 const clock = (ms) => new Date(ms).toISOString().replace("T", " ").slice(0, 16);
 const iso = (ms) => (ms == null ? null : new Date(ms).toISOString().replace(".000Z", "Z"));
 const show = (text) => visible(text).replace(/\s+/g, " ").trim();
-
-export function costOf(tokens) {
-  return (tokens * PRICE_PER_MILLION) / 1e6;
-}
-
-export function formatCost(usd) {
-  if (usd <= 0) return "$0";
-  if (usd >= 0.01) return `$${usd.toFixed(2)}`;
-  return `$${usd.toFixed(1 - Math.floor(Math.log10(usd)))}`;
-}
 
 function topProbabilities(probabilities, name = (key) => key) {
   return Object.entries(probabilities ?? {})
@@ -212,9 +200,8 @@ export function reportText(read, grouped, outcome, ranked, meta) {
     return `${lines.join("\n")}\n`;
   }
   if (ranked.length) {
-    const tokens = outcome.usage.input_tokens;
     const n = counts(ranked);
-    lines.push(`Jev: model ${outcome.model ?? meta.model}, ${plural(outcome.requests, "request")}, ${int(tokens)} input tokens (about ${formatCost(costOf(tokens))})`);
+    lines.push(`Jev: model ${outcome.model ?? meta.model}, ${plural(outcome.requests, "request")}, ${int(outcome.usage.input_tokens)} input tokens`);
     lines.push(`Threshold ${meta.threshold.toFixed(2)}: ${int(n.retry)} safe to retry, ${int(n.fixFirst)} fix first, ${int(n.review)} for review`);
     lines.push("", "Failed groups, most urgent first", ...overviewLines(ranked));
     const sections = [
@@ -340,7 +327,7 @@ export function dryRunText(read, grouped, requests, meta) {
   requests.forEach((request, i) => {
     lines.push(`  request ${i + 1}: ${plural(request.ids.length, "group")}, about ${int(request.estimatedTokens)} input tokens`);
   });
-  lines.push(`Estimated total: about ${int(total)} input tokens, about ${formatCost(costOf(total))} at $${PRICE_PER_MILLION} per million input tokens`);
+  lines.push(`Estimated total: about ${int(total)} input tokens`);
 
   const example = grouped.failed[0].id;
   lines.push("", `Questions for each group (shown for ${example}; every group gets the same three under its own key):`);
@@ -376,7 +363,6 @@ export function dryRunJson(read, grouped, requests, meta) {
     model: meta.model,
     groups_total: grouped.failed.length,
     estimated_input_tokens: total,
-    estimated_cost_usd: Number(costOf(total).toPrecision(3)),
     requests: requests.map((request) => ({
       groups: request.ids,
       estimated_input_tokens: request.estimatedTokens,
