@@ -72,6 +72,7 @@ export function groupActions(actions) {
           actionGroups: new Set(),
           argsSeen: new Set(),
           argsOverflow: false,
+          argsMissing: false,
           examples: [],
           actions: [],
           order: action.order,
@@ -88,7 +89,8 @@ export function groupActions(actions) {
       group.stopped ||= failure.stopped;
       if (action.group) group.actionGroups.add(action.group);
       const argsKey = JSON.stringify(action.args);
-      if (!group.argsSeen.has(argsKey)) {
+      if (action.args === null) group.argsMissing = true;
+      else if (!group.argsSeen.has(argsKey)) {
         if (group.argsSeen.size < MAX_DISTINCT) group.argsSeen.add(argsKey);
         else group.argsOverflow = true;
         if (group.examples.length < MAX_EXAMPLES && !isEmptyArgs(action.args)) {
@@ -133,9 +135,11 @@ export function groupActions(actions) {
   };
   const failedList = numbered([...failed.values()].map(finish), "g");
   for (const group of failedList) {
-    group.distinctArgs = group.argsOverflow ? MAX_DISTINCT + 1 : group.argsSeen.size;
+    // null (unknown) when an action in the group came without its arguments
+    group.distinctArgs = group.argsMissing ? null : group.argsOverflow ? MAX_DISTINCT + 1 : group.argsSeen.size;
     delete group.argsSeen;
     delete group.argsOverflow;
+    delete group.argsMissing;
   }
   return { failed: failedList, pastDue: numbered([...pending.values()].map(finish), "p"), stats };
 }

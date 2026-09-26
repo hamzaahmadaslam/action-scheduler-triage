@@ -101,7 +101,7 @@ function detailLine(group) {
   if (group.recurring === "yes") parts.push("recurring");
   else if (group.recurring === "no") parts.push("single actions");
   else if (group.recurring === "some") parts.push("some recurring");
-  if (group.count > 1) parts.push(group.distinctArgs <= 1 ? "the same arguments every time" : "different arguments");
+  if (group.count > 1 && group.distinctArgs !== null) parts.push(group.distinctArgs <= 1 ? "the same arguments every time" : "different arguments");
   if (group.stopped) parts.push("Action Scheduler stopped scheduling it after repeated failures");
   return parts.join("; ");
 }

@@ -26,6 +26,10 @@ test("decides retry, fix first or review from answers at, above and below the th
   assert.deepEqual([lowCause.decision, lowCause.reviewReasons], ["review", ["cause confidence 0.79, below 0.80"]]);
   assert.equal(decide({ retry: 0.64 }, 0.6).decision, "retry", "a lower threshold");
   assert.equal(decide({ retry: 0.97 }, 0.98).decision, "review", "a higher threshold");
+  const tie = decide({ retry: 0.5 }, 0.5);
+  assert.deepEqual([tie.decision, tie.reviewReasons], ["review", ["safe to run again 0.50, between 0.50 and 0.50"]], "0.50 at a threshold of 0.50 is both yes and no");
+  assert.equal(decide({ retry: 0.51 }, 0.5).decision, "retry");
+  assert.equal(decide({ retry: 0.49 }, 0.5).decision, "fix-first");
 
   const decided = decide({ score: 2.6 });
   assert.deepEqual([decided.urgency.level, decided.urgency.label, decided.retry], [3, "now", 0.9]);

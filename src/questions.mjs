@@ -87,7 +87,7 @@ export function stateFor(group, exportEnd) {
   state.error = clip(group.error, ERROR_CHARS);
   if (group.recurring) state.recurring = group.recurring;
   state.occurrences = occurrences(group.count);
-  if (group.count > 1) state.arguments = group.distinctArgs <= 1 ? "the same for every action" : "different between actions";
+  if (group.count > 1 && group.distinctArgs !== null) state.arguments = group.distinctArgs <= 1 ? "the same for every action" : "different between actions";
   const args = firstArgs(group);
   if (args !== undefined) state.argument_types = argsShape(args);
   if (exportEnd != null && group.last != null) state.failed_in_last_24_hours_of_export = group.last >= exportEnd - DAY_MS ? "yes" : "no";

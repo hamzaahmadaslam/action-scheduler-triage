@@ -50,7 +50,8 @@ export function decide(group, threshold) {
   if (!cause) reasons.push("no cause answer from Jev");
   else if (round(cause.confidence) < threshold) reasons.push(`cause confidence ${two(cause.confidence)}, below ${two(threshold)}`);
   if (retry === null) reasons.push("no safe-to-run-again answer from Jev");
-  else if (!yes && !no) reasons.push(`safe to run again ${two(retry)}, between ${two(round(1 - threshold))} and ${two(threshold)}`);
+  // Neither yes nor no, or both: at a threshold of 0.5, an answer of exactly 0.5 is both.
+  else if (yes === no) reasons.push(`safe to run again ${two(retry)}, between ${two(round(1 - threshold))} and ${two(threshold)}`);
   if (!group.urgency) reasons.push("no urgency answer from Jev");
   if (!reasons.length && yes && !TRANSIENT.has(cause.choice)) {
     reasons.push(`Jev says safe to run again (${retry.toFixed(2)}) but the cause is ${cause.choice}`);

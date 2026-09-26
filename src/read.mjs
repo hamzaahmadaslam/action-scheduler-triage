@@ -15,10 +15,14 @@ export async function readText(name, stdin) {
 }
 
 const DATE = /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?(?:\.\d+)?)?\s*(Z|UTC|GMT|[+-]\d{2}:?\d{2})?$/i;
+const MAX_TIME = 8.64e15; // the latest time a JavaScript Date can hold, in milliseconds
 
 /** A date from an export as milliseconds since 1970, or null. Dates without an offset are read as UTC. */
 export function parseDate(value) {
-  if (typeof value === "number" && Number.isFinite(value) && value > 0) return value < 1e12 ? value * 1000 : value;
+  if (typeof value === "number" && Number.isFinite(value) && value > 0) {
+    const ms = value < 1e12 ? value * 1000 : value;
+    return ms <= MAX_TIME ? ms : null;
+  }
   if (typeof value !== "string") return null;
   const m = DATE.exec(value.trim());
   if (!m || m[1] === "0000") return null;
@@ -78,7 +82,8 @@ export function normalizeAction(item) {
     group: typeof item.group === "string" ? item.group.trim() : "",
     recurring: readRecurring(item.recurring),
     scheduled: parseDate(item.scheduled_date),
-    args: args === undefined ? [] : args,
+    // null when the export left args out: the action's arguments are unknown, so no retry command can copy them.
+    args: args === undefined ? null : args,
     logs: readLogs(item.log_entries),
   };
 }

@@ -32,6 +32,10 @@ test("reads a WP-CLI export: fields, dates with offsets, numbered ids, repeated 
   assert.equal(parseDate("2026-09-24T10:00:00Z"), Date.UTC(2026, 8, 24, 10));
   assert.equal(parseDate("2026-09-24 10:00:00 -0130"), Date.UTC(2026, 8, 24, 11, 30));
   assert.equal(parseDate("yesterday"), null);
+  assert.equal(parseDate(1e20), null, "a number beyond what a JavaScript Date can hold");
+
+  const withoutArgs = actionsIn('[{"id":1,"hook":"h","status":"failed"}]').actions[0];
+  assert.equal(withoutArgs.args, null, "arguments the export left out are unknown, not empty");
 });
 
 test("skips notices printed before the JSON, reads one action from `action get`, and rejects other input plainly", () => {

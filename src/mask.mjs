@@ -1,7 +1,7 @@
 // Two views of an action's arguments, neither of which holds personal data:
 //   maskArgs()   for the report: values stay, except those under a personal-sounding name (email, phone, name,
-//                address, note, token, key, ...) and any email address, phone number, public IP address, URL query
-//                or long token found in a text value.
+//                address, note, token, key, ...), any email address, phone number, public IP address or URL query
+//                found in a text value, and a text value that is a long token.
 //   argsShape()  for Jev: the names and the types of the values ("number", "text"), never a value.
 // The retry commands use the arguments exactly as exported (see commands.mjs); these views are never used for them.
 import { EMAIL, cleanText, isPublicIp, visible } from "./clean.mjs";

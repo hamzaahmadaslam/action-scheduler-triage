@@ -39,7 +39,7 @@ Code then puts each group in one list, with a threshold of 0.8 unless you set `-
 - fix first: the yes/no answer is at or below 1 minus the threshold (0.2), and the cause's confidence is at or
   above the threshold;
 - review: everything else, including a "safe" answer for a cause that a rerun cannot fix, where the two answers
-  disagree.
+  disagree, and a yes/no answer of exactly 0.5 at a threshold of 0.5, which would meet both conditions above.
 
 The groups go into as few requests as TypeSafe's limits allow (32k tokens for the state plus the longest question,
 64k for the whole request). Each group sits under its own key in the state, such as `groups.g07`, and its questions
@@ -68,8 +68,8 @@ wp action-scheduler action list --status=failed --orderby=modified --order=DESC 
   --fields=id,hook,status,group,recurring,scheduled_date,args,log_entries --format=json > failed-actions.json
 ```
 
-- `--fields` must name `args` and `log_entries`. The default fields leave both out, and without the log there is no
-  error to group by.
+- `--fields` must name `args` and `log_entries`. The default fields leave both out. Without the log there is no error
+  to group by, and without the arguments no retry command can be written.
 - Set `--per_page`: without it Action Scheduler returns 5 actions. `--orderby=modified --order=DESC` puts the most
   recent failures first; `--per_page=-1` exports all of them.
 - On multisite, add `--url=<site>` as for any `wp` command.
@@ -111,8 +111,9 @@ ssh example-host 'cd /srv/site && wp action-scheduler action list --status=faile
 `TYPESAFE_API_KEY` holds your key and is not needed for `--dry-run`. `TYPESAFE_MODEL` picks the model
 (`jev-latest` by default). Give one or more exports; `-` reads one from standard input. Lines that WP-CLI or PHP print
 before the JSON, such as notices, are skipped, and an action id that appears twice is counted once. The exit code is
-0 when the report is printed, 1 for a TypeSafe error (refused key, invalid request, rate limit, overload, timeout)
-and 2 for a missing key, bad options or an export that cannot be read.
+0 when the report is printed, 1 for a TypeSafe error (refused key, invalid request, rate limit, overload, timeout, an
+answer that cannot be read) or a report that cannot be written, and 2 for a missing key, bad options or an export
+that cannot be read.
 
 ### The retry commands
 
@@ -135,9 +136,10 @@ wp action-scheduler action create example_crm_sync_customer async --args='{"cust
 - The new action gets Action Scheduler's default priority, 10.
 - Recurring actions get no commands: their next scheduled run repeats the work. The report prints a read-only
   command that lists the pending run instead.
-- An action is left out, with the reason, when its arguments cannot be copied exactly (a number too large for
-  JavaScript, or numbered keys whose order reading the JSON can change), or when its hook or group name holds
-  control characters or the hook starts with a dash, which WP-CLI would read as an option.
+- An action is left out, with the reason, when the export left its arguments out, when its arguments cannot be
+  copied exactly (a number too large for JavaScript, or numbered keys whose order reading the JSON can change), or
+  when its hook or group name holds control characters or the hook starts with a dash, which WP-CLI would read as an
+  option.
 - The text report shows up to 10 commands per group and the JSON report has all of them. To collect every command
   in a file you can read before running it:
   `jq -r '.groups[] | select(.decision == "retry") | .retry_commands[]' triage.json > retry.sh`
@@ -297,7 +299,7 @@ about 230,000 tokens in 4 requests. Run `--dry-run` first to see the estimate fo
 
 ## Development
 
-`npm test` runs 26 tests with Node's test runner. They need no key: a fixture stands in for Jev, and any attempt to
+`npm test` runs 29 tests with Node's test runner. They need no key: a fixture stands in for Jev, and any attempt to
 reach the network fails the test. `npm run example` rebuilds the files in `examples/`, and a test checks that they
 match the code.
 

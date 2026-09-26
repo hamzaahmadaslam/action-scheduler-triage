@@ -1,4 +1,4 @@
-// A small client for TypeSafe's System One API (Jev). Copy this file into a tool as src/jev.mjs.
+// A small client for TypeSafe's System One API (Jev). It imports nothing, so it can be copied into another tool as is.
 // API: POST https://api.typesafe.ai/v1/systemone  { model, state, questions }  -> { model, answers, usage }
 // The key comes from TYPESAFE_API_KEY and is only ever sent in the Authorization header.
 
@@ -16,9 +16,10 @@ export class JevError extends Error {
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
- * Asks Jev the `questions` about `state`. Retries 429 and 529 up to `retries` times with exponential backoff
- * (honouring retry-after), times out each attempt after `timeoutMs`, and throws a JevError with a plain message
- * otherwise. `fetchImpl` is injectable so tests never touch the network.
+ * Asks Jev the `questions` about `state`. Retries network errors, timeouts, 429 and 529 up to `retries` times with
+ * exponential backoff (honouring retry-after, but waiting at most `maxWaitMs`), times out each attempt after
+ * `timeoutMs`, and throws a JevError with a one-line message otherwise. `fetchImpl` is injectable so tests never
+ * touch the network.
  */
 export async function askJev(state, questions, options = {}) {
   const {
@@ -26,6 +27,7 @@ export async function askJev(state, questions, options = {}) {
     model = process.env.TYPESAFE_MODEL || DEFAULT_MODEL,
     timeoutMs = 10_000,
     retries = 3,
+    maxWaitMs = 60_000,
     fetchImpl = globalThis.fetch,
   } = options;
   if (!apiKey || !apiKey.trim()) {
@@ -43,22 +45,29 @@ export async function askJev(state, questions, options = {}) {
       });
     } catch (error) {
       if (attempt < retries) {
-        await sleep(500 * 2 ** attempt);
+        await sleep(Math.min(500 * 2 ** attempt, maxWaitMs));
         continue;
       }
       throw new JevError(`Could not reach TypeSafe: ${error?.name === "TimeoutError" ? "timed out" : error?.message}`, 0);
     }
     if (res.ok) {
-      const data = await res.json();
-      if (!data || typeof data.answers !== "object") throw new JevError("TypeSafe answered without answers.", res.status);
+      let data;
+      try {
+        data = await res.json();
+      } catch (error) {
+        const why = error?.name === "TimeoutError" ? "timed out" : error?.name === "SyntaxError" ? "not valid JSON" : error?.message;
+        throw new JevError(`TypeSafe error: the answer could not be read (${why})`, res.status);
+      }
+      if (!data?.answers || typeof data.answers !== "object") throw new JevError("TypeSafe answered without answers.", res.status);
       return data;
     }
     if ((res.status === 429 || res.status === 529) && attempt < retries) {
       const after = Number(res.headers.get("retry-after"));
-      await sleep(Number.isFinite(after) && after > 0 ? after * 1000 : 500 * 2 ** attempt);
+      await sleep(Math.min(Number.isFinite(after) && after > 0 ? after * 1000 : 500 * 2 ** attempt, maxWaitMs));
       continue;
     }
-    const detail = await res.text().catch(() => "");
+    // One line, without control characters, however the body is laid out.
+    const detail = (await res.text().catch(() => "")).replace(/[\s\x00-\x1f\x7f-\x9f]+/g, " ").trim();
     const reason =
       res.status === 401
         ? "the API key was refused"
@@ -73,7 +82,7 @@ export async function askJev(state, questions, options = {}) {
   }
 }
 
-/** Question helpers (the shapes in reference/typesafe/api.md). */
+/** Question helpers, in the shape sent to the API: { type, instructions, criteria }. */
 export const noul = (instructions, criteria) => ({ type: "noul", instructions, ...(criteria ? { criteria } : {}) });
 export const choice = (instructions, options) => ({ type: "choice", instructions, criteria: options });
 export const score = (instructions, levels) => ({ type: "score", instructions, criteria: levels });

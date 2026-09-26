@@ -1,11 +1,14 @@
 import "./helpers/no-network.mjs";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { closeSync, existsSync, openSync } from "node:fs";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { fixtureFetch } from "../src/jev.mjs";
 import { KEY_ENV, runCli } from "./helpers/run.mjs";
 
 const SMALL = fileURLToPath(new URL("./fixtures/small.json", import.meta.url));
+const CLI = fileURLToPath(new URL("../src/cli.mjs", import.meta.url));
 const NO_STACK = /\n\s+at |Error:\s/;
 
 test("a missing key is a one-line error with exit code 2, and nothing is sent", async () => {
@@ -34,6 +37,9 @@ test("401, 422, 429, 529 and timeouts end with a one-line error, without the key
     assert.match(err, pattern);
     assert.doesNotMatch(err, /test-secret-value/);
   }
+  const pretty = async () => new Response(JSON.stringify({ error: { message: "state too large" } }, null, 2), { status: 422 });
+  const invalid = await runCli([SMALL], { env: KEY_ENV, fetchImpl: pretty, jev: { retries: 0 } });
+  assert.equal(invalid.err, 'TypeSafe error: the request was invalid: { "error": { "message": "state too large" } }\n', "a body on several lines is printed on one");
 
   // A request that never answers is cut off by the timeout on the request's own abort signal. The interval stands
   // in for the open socket of a real request, which keeps the process running until the timeout fires.
@@ -57,6 +63,57 @@ test("retries 429 and 529 with backoff, then uses the answer", async () => {
   assert.equal(calls.length, 3);
   assert.match(out, /Jev: model fixture, 1 request, 5 input tokens/);
   assert.match(out, /^Threshold 0\.80: 0 safe to retry, 0 fix first, 3 for review$/m, "groups without answers go to review");
+
+  // A retry-after longer than maxWaitMs (a minute unless set) is cut short, so a run never waits for hours.
+  let attempts = 0;
+  const later = async () =>
+    ++attempts === 1
+      ? new Response("", { status: 429, headers: { "retry-after": "5" } })
+      : new Response(JSON.stringify({ model: "fixture", answers: {} }), { status: 200 });
+  const started = Date.now();
+  const capped = await runCli([SMALL], { env: KEY_ENV, fetchImpl: later, jev: { retries: 1, maxWaitMs: 20 } });
+  assert.deepEqual([capped.code, attempts], [0, 2]);
+  assert.ok(Date.now() - started < 2500, "waited at most maxWaitMs, not the 5 seconds retry-after asked for");
+});
+
+test("an answer that cannot be read, or that holds no answers, is a one-line error with exit code 1", async () => {
+  const notJson = async () => new Response("<html>Bad gateway</html>", { status: 200 });
+  const noAnswers = fixtureFetch(() => ({ model: "fixture", answers: null })).fetchImpl;
+  // The body starts but never ends, until the request's own timeout cuts it off. The interval stands in for the
+  // open socket of a real request, which keeps the process running until the timeout fires.
+  const stalled = async (_url, init) => {
+    const socket = setInterval(() => {}, 1000);
+    const body = new ReadableStream({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('{"answers":'));
+        init.signal.addEventListener("abort", () => {
+          clearInterval(socket);
+          controller.error(init.signal.reason);
+        });
+      },
+    });
+    return new Response(body, { status: 200 });
+  };
+  const cases = [
+    [notJson, "TypeSafe error: the answer could not be read (not valid JSON)\n"],
+    [noAnswers, "TypeSafe answered without answers.\n"],
+    [stalled, "TypeSafe error: the answer could not be read (timed out)\n"],
+  ];
+  for (const [fetchImpl, message] of cases) {
+    const { code, out, err } = await runCli([SMALL], { env: KEY_ENV, fetchImpl, jev: { retries: 0, timeoutMs: 20 } });
+    assert.deepEqual([code, out, err], [1, "", message]);
+  }
+});
+
+test("a report that cannot be written, as on a full disk, is a one-line error with exit code 1", { skip: !existsSync("/dev/full") && "needs /dev/full" }, () => {
+  const full = openSync("/dev/full", "w");
+  try {
+    const { status, stderr } = spawnSync(process.execPath, [CLI, SMALL, "--dry-run"], { stdio: ["ignore", full, "pipe"], encoding: "utf8" });
+    assert.equal(status, 1);
+    assert.match(stderr, /^action-scheduler-triage: cannot write the output: ENOSPC\b[^\n]*\n$/);
+  } finally {
+    closeSync(full);
+  }
 });
 
 test("bad options and unreadable or malformed exports are one-line errors with exit code 2", async () => {

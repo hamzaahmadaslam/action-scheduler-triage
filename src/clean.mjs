@@ -16,7 +16,7 @@ const INVISIBLE_CLASS = `[\\x00-\\x08\\x0b-\\x1f\\x7f-\\x9f${char(0x200b)}-${cha
 const INVISIBLE = new RegExp(INVISIBLE_CLASS, "g");
 const HAS_INVISIBLE = new RegExp(`${INVISIBLE_CLASS}|[\\t\\n]`);
 
-/** Removes control and invisible characters; tabs and line breaks become spaces. */
+/** Replaces control and invisible characters, tabs and line breaks with spaces. */
 export function visible(text) {
   return String(text).replace(INVISIBLE, " ").replace(/[\t\n]/g, " ");
 }
@@ -93,7 +93,7 @@ export function cleanMessage(message) {
 
 // ---------------------------------------------------------------------------------------------------------------
 // The failure in an action's log. The message formats are Action Scheduler's own (ActionScheduler_Logger and
-// ActionScheduler_Abstract_QueueRunner); the timeout wording changed after 3.9, so both forms are read.
+// ActionScheduler_Abstract_QueueRunner); the timeout wording changed in 4.0.0, so both forms are read.
 
 const LIFECYCLE = /^action (?:created|canceled|cancelled|reset|started|complete|completed|ignored)\b/i;
 const STOPPED = /^This action appears to be consistently failing/i;
