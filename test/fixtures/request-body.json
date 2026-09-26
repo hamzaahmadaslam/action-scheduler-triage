@@ -1,0 +1,136 @@
+{
+  "model": "jev-latest",
+  "state": {
+    "about": "Groups of failed background actions from Action Scheduler, the job queue that WooCommerce and many WordPress plugins use, exported from one site. Each group is one hook that failed with the same error one or more times. In `error`, ids, amounts, dates, numbers and email addresses were replaced with placeholders such as <id>, <amount> and <n>. `argument_types` gives the names and value types of an action's arguments, without the values.",
+    "groups": {
+      "g01": {
+        "hook": "example_sync_order",
+        "action_group": "example-sync",
+        "error": "cURL error 28: Operation timed out after <n> milliseconds with <n> bytes received from https://api.example.com/v1/orders?<query>",
+        "recurring": "no",
+        "occurrences": "a few times",
+        "arguments": "different between actions",
+        "argument_types": {
+          "order_id": "number",
+          "email": "text"
+        },
+        "failed_in_last_24_hours_of_export": "yes"
+      },
+      "g02": {
+        "hook": "example_render_report",
+        "action_group": "example-report",
+        "error": "PHP Fatal error Uncaught Error: Call to undefined function example_missing() in wp-content/plugins/example-report/report.php:<n>",
+        "recurring": "yes",
+        "occurrences": "once",
+        "failed_in_last_24_hours_of_export": "no",
+        "recurring_schedule_stopped": "yes: Action Scheduler stopped scheduling this recurring action after repeated failures"
+      },
+      "g03": {
+        "hook": "example_notify_customer",
+        "error": "Customer <id> has no email address on file (<email> was removed on <time>)",
+        "recurring": "no",
+        "occurrences": "once",
+        "argument_types": {
+          "customer_id": "number",
+          "phone": "text"
+        },
+        "failed_in_last_24_hours_of_export": "yes"
+      }
+    }
+  },
+  "questions": {
+    "g01_cause": {
+      "type": "choice",
+      "instructions": "What most likely caused the failures in `groups.g01`?",
+      "criteria": {
+        "transient-network-or-timeout": "A temporary problem outside the action's own code and data: a connection that timed out or was refused, a DNS or SSL error, a remote service that was briefly down (HTTP 500, 502, 503 or 504), a lost database connection or a deadlock, or the action running out of time while it waited.",
+        "rate-limited": "A remote service turned requests away because too many were sent: HTTP 429, too many requests, rate limit, quota exceeded or throttled.",
+        "credentials-or-auth": "A remote service or WordPress refused the request because of an API key, token, password, license or permission: HTTP 401 or 403, unauthorized, forbidden, an invalid or expired key or token, or a failed login.",
+        "invalid-data": "The action's own data is wrong or gone: a deleted or missing order, product, customer or post, a missing or malformed value, a duplicate record, or a remote service rejecting the data as invalid (HTTP 400 or 422).",
+        "code-error": "A bug in PHP code: an uncaught error or exception, a call to an undefined function or method, a type error, a syntax error, or running out of PHP memory.",
+        "missing-plugin-or-callback": "Nothing handled the hook: no callbacks are registered for it, or the plugin, class or function that should run it is deactivated, deleted or not loaded.",
+        "other": "None of the above, or the error does not say why the actions failed."
+      }
+    },
+    "g01_retry": {
+      "type": "noul",
+      "instructions": "Is it safe to run the actions in `groups.g01` again as they are, with the same arguments and without changing any code, data or settings first?",
+      "criteria": {
+        "true": "The failure came from a temporary condition that has likely passed, such as a timeout, a dropped connection, a rate limit or a service that was briefly down, and running the same actions again would not repeat anything that may already have happened, such as a payment, a refund, a sent email or a created order.",
+        "false": "Running them again unchanged would fail the same way until code, data, credentials or a missing plugin is fixed, or it could repeat a payment, a refund, an email or an order that may already have happened."
+      }
+    },
+    "g01_urgency": {
+      "type": "score",
+      "instructions": "How soon should someone deal with the failures in `groups.g01`?",
+      "criteria": [
+        "Can wait: housekeeping or reporting work, such as a cleanup, a cache refresh or an analytics import, with no effect on customers, orders or money.",
+        "Routine: a background task is behind or failing with a small or delayed effect, such as a data sync, a product feed, a report or a newsletter.",
+        "Soon: customers or staff will notice within a day, such as missing order or shipping emails, stock or prices out of sync, orders not reaching another system, or a recurring job that has stopped.",
+        "Now: money, orders or access are affected, such as payments or subscription renewals not taken, orders not created or completed, refunds failing, or customers losing access."
+      ]
+    },
+    "g02_cause": {
+      "type": "choice",
+      "instructions": "What most likely caused the failures in `groups.g02`?",
+      "criteria": {
+        "transient-network-or-timeout": "A temporary problem outside the action's own code and data: a connection that timed out or was refused, a DNS or SSL error, a remote service that was briefly down (HTTP 500, 502, 503 or 504), a lost database connection or a deadlock, or the action running out of time while it waited.",
+        "rate-limited": "A remote service turned requests away because too many were sent: HTTP 429, too many requests, rate limit, quota exceeded or throttled.",
+        "credentials-or-auth": "A remote service or WordPress refused the request because of an API key, token, password, license or permission: HTTP 401 or 403, unauthorized, forbidden, an invalid or expired key or token, or a failed login.",
+        "invalid-data": "The action's own data is wrong or gone: a deleted or missing order, product, customer or post, a missing or malformed value, a duplicate record, or a remote service rejecting the data as invalid (HTTP 400 or 422).",
+        "code-error": "A bug in PHP code: an uncaught error or exception, a call to an undefined function or method, a type error, a syntax error, or running out of PHP memory.",
+        "missing-plugin-or-callback": "Nothing handled the hook: no callbacks are registered for it, or the plugin, class or function that should run it is deactivated, deleted or not loaded.",
+        "other": "None of the above, or the error does not say why the actions failed."
+      }
+    },
+    "g02_retry": {
+      "type": "noul",
+      "instructions": "Is it safe to run the actions in `groups.g02` again as they are, with the same arguments and without changing any code, data or settings first?",
+      "criteria": {
+        "true": "The failure came from a temporary condition that has likely passed, such as a timeout, a dropped connection, a rate limit or a service that was briefly down, and running the same actions again would not repeat anything that may already have happened, such as a payment, a refund, a sent email or a created order.",
+        "false": "Running them again unchanged would fail the same way until code, data, credentials or a missing plugin is fixed, or it could repeat a payment, a refund, an email or an order that may already have happened."
+      }
+    },
+    "g02_urgency": {
+      "type": "score",
+      "instructions": "How soon should someone deal with the failures in `groups.g02`?",
+      "criteria": [
+        "Can wait: housekeeping or reporting work, such as a cleanup, a cache refresh or an analytics import, with no effect on customers, orders or money.",
+        "Routine: a background task is behind or failing with a small or delayed effect, such as a data sync, a product feed, a report or a newsletter.",
+        "Soon: customers or staff will notice within a day, such as missing order or shipping emails, stock or prices out of sync, orders not reaching another system, or a recurring job that has stopped.",
+        "Now: money, orders or access are affected, such as payments or subscription renewals not taken, orders not created or completed, refunds failing, or customers losing access."
+      ]
+    },
+    "g03_cause": {
+      "type": "choice",
+      "instructions": "What most likely caused the failures in `groups.g03`?",
+      "criteria": {
+        "transient-network-or-timeout": "A temporary problem outside the action's own code and data: a connection that timed out or was refused, a DNS or SSL error, a remote service that was briefly down (HTTP 500, 502, 503 or 504), a lost database connection or a deadlock, or the action running out of time while it waited.",
+        "rate-limited": "A remote service turned requests away because too many were sent: HTTP 429, too many requests, rate limit, quota exceeded or throttled.",
+        "credentials-or-auth": "A remote service or WordPress refused the request because of an API key, token, password, license or permission: HTTP 401 or 403, unauthorized, forbidden, an invalid or expired key or token, or a failed login.",
+        "invalid-data": "The action's own data is wrong or gone: a deleted or missing order, product, customer or post, a missing or malformed value, a duplicate record, or a remote service rejecting the data as invalid (HTTP 400 or 422).",
+        "code-error": "A bug in PHP code: an uncaught error or exception, a call to an undefined function or method, a type error, a syntax error, or running out of PHP memory.",
+        "missing-plugin-or-callback": "Nothing handled the hook: no callbacks are registered for it, or the plugin, class or function that should run it is deactivated, deleted or not loaded.",
+        "other": "None of the above, or the error does not say why the actions failed."
+      }
+    },
+    "g03_retry": {
+      "type": "noul",
+      "instructions": "Is it safe to run the actions in `groups.g03` again as they are, with the same arguments and without changing any code, data or settings first?",
+      "criteria": {
+        "true": "The failure came from a temporary condition that has likely passed, such as a timeout, a dropped connection, a rate limit or a service that was briefly down, and running the same actions again would not repeat anything that may already have happened, such as a payment, a refund, a sent email or a created order.",
+        "false": "Running them again unchanged would fail the same way until code, data, credentials or a missing plugin is fixed, or it could repeat a payment, a refund, an email or an order that may already have happened."
+      }
+    },
+    "g03_urgency": {
+      "type": "score",
+      "instructions": "How soon should someone deal with the failures in `groups.g03`?",
+      "criteria": [
+        "Can wait: housekeeping or reporting work, such as a cleanup, a cache refresh or an analytics import, with no effect on customers, orders or money.",
+        "Routine: a background task is behind or failing with a small or delayed effect, such as a data sync, a product feed, a report or a newsletter.",
+        "Soon: customers or staff will notice within a day, such as missing order or shipping emails, stock or prices out of sync, orders not reaching another system, or a recurring job that has stopped.",
+        "Now: money, orders or access are affected, such as payments or subscription renewals not taken, orders not created or completed, refunds failing, or customers losing access."
+      ]
+    }
+  }
+}

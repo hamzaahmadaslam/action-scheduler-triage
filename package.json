@@ -1,0 +1,43 @@
+{
+  "name": "action-scheduler-triage",
+  "version": "1.0.0",
+  "description": "Group the failed actions of WordPress's Action Scheduler by hook and error, then ask Jev which groups are safe to run again unchanged and which need a fix first. Read-only: it prints WP-CLI commands and never runs them.",
+  "type": "module",
+  "bin": {
+    "action-scheduler-triage": "src/cli.mjs"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "example": "node examples/build.mjs"
+  },
+  "keywords": [
+    "wordpress",
+    "woocommerce",
+    "action-scheduler",
+    "wp-cli",
+    "background-jobs",
+    "triage",
+    "cli",
+    "typesafe",
+    "jev"
+  ],
+  "author": "Hamza Ahmad Aslam (https://hamzaahmadaslam.com)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hamzaahmadaslam/action-scheduler-triage.git"
+  },
+  "homepage": "https://github.com/hamzaahmadaslam/action-scheduler-triage#readme",
+  "bugs": {
+    "url": "https://github.com/hamzaahmadaslam/action-scheduler-triage/issues"
+  }
+}

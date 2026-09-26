@@ -1,0 +1,77 @@
+{
+  "note": "Hand-written answers in the shape of TypeSafe's API. npm run example and the tests use them in place of Jev; the numbers are illustrations, not results of a live call.",
+  "answers": [
+    {
+      "hook": "example_webhooks_deliver",
+      "cause": { "transient-network-or-timeout": 0.93, "rate-limited": 0.02, "other": 0.05 },
+      "retry": 0.64,
+      "urgency": { "1": 0.22, "2": 0.7, "3": 0.08 }
+    },
+    {
+      "hook": "example_crm_sync_customer",
+      "cause": { "rate-limited": 0.96, "transient-network-or-timeout": 0.03, "other": 0.01 },
+      "retry": 0.91,
+      "urgency": { "0": 0.02, "1": 0.84, "2": 0.14 }
+    },
+    {
+      "hook": "example_feed_push_product",
+      "cause": { "transient-network-or-timeout": 0.95, "rate-limited": 0.02, "other": 0.03 },
+      "retry": 0.9,
+      "urgency": { "0": 0.06, "1": 0.9, "2": 0.04 }
+    },
+    {
+      "hook": "example_rates_refresh",
+      "cause": { "transient-network-or-timeout": 0.94, "rate-limited": 0.02, "other": 0.04 },
+      "retry": 0.93,
+      "urgency": { "0": 0.08, "1": 0.62, "2": 0.3 }
+    },
+    {
+      "hook": "example_gateway_capture_payment",
+      "cause": { "transient-network-or-timeout": 0.91, "rate-limited": 0.02, "code-error": 0.02, "other": 0.05 },
+      "retry": 0.08,
+      "urgency": { "2": 0.06, "3": 0.94 }
+    },
+    {
+      "hook": "example_mailer_send_receipt",
+      "cause": { "credentials-or-auth": 0.95, "transient-network-or-timeout": 0.03, "other": 0.02 },
+      "retry": 0.06,
+      "urgency": { "1": 0.08, "2": 0.82, "3": 0.1 }
+    },
+    {
+      "hook": "example_stock_import_update",
+      "cause": { "invalid-data": 0.93, "code-error": 0.03, "other": 0.04 },
+      "retry": 0.05,
+      "urgency": { "0": 0.06, "1": 0.74, "2": 0.2 }
+    },
+    {
+      "hook": "example_reports_rebuild",
+      "cause": { "code-error": 0.97, "invalid-data": 0.02, "other": 0.01 },
+      "retry": 0.03,
+      "urgency": { "0": 0.05, "1": 0.55, "2": 0.4 }
+    },
+    {
+      "hook": "example_invoices_generate_pdf",
+      "cause": { "code-error": 0.88, "transient-network-or-timeout": 0.07, "other": 0.05 },
+      "retry": 0.12,
+      "urgency": { "0": 0.05, "1": 0.6, "2": 0.35 }
+    },
+    {
+      "hook": "example_legacy_cleanup",
+      "cause": { "missing-plugin-or-callback": 0.99, "other": 0.01 },
+      "retry": 0.02,
+      "urgency": { "0": 0.9, "1": 0.1 }
+    },
+    {
+      "hook": "example_loyalty_award_points",
+      "cause": { "transient-network-or-timeout": 0.52, "code-error": 0.31, "other": 0.17 },
+      "retry": 0.35,
+      "urgency": { "0": 0.05, "1": 0.7, "2": 0.25 }
+    },
+    {
+      "hook": "example_newsletter_subscribe",
+      "cause": { "invalid-data": 0.9, "credentials-or-auth": 0.02, "other": 0.08 },
+      "retry": 0.07,
+      "urgency": { "0": 0.55, "1": 0.45 }
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+action-scheduler-triage 1.0.0 (dry run: nothing was sent)
+Input: examples/failed-actions.json, examples/past-due-actions.json
+Actions: 87 failed in 12 groups, 9 past due in 2 groups
+Skipped: 1 action with another status (1 canceled)
+Failed between 2026-09-18 03:10 and 2026-09-25 18:30 UTC
+
+Would send 1 request to https://api.typesafe.ai/v1/systemone with model jev-latest:
+  request 1: 12 groups, about 13,592 input tokens
+Estimated total: about 13,592 input tokens, about $0.00057 at $0.042 per million input tokens
+
+Questions for each group (shown for g01; every group gets the same three under its own key):
+
+g01_cause (choice): What most likely caused the failures in `groups.g01`?
+  transient-network-or-timeout: A temporary problem outside the action's own code and data: a connection that timed out or was refused, a DNS or SSL error, a remote service that was briefly down (HTTP 500, 502, 503 or 504), a lost database connection or a deadlock, or the action running out of time while it waited.
+  rate-limited: A remote service turned requests away because too many were sent: HTTP 429, too many requests, rate limit, quota exceeded or throttled.
+  credentials-or-auth: A remote service or WordPress refused the request because of an API key, token, password, license or permission: HTTP 401 or 403, unauthorized, forbidden, an invalid or expired key or token, or a failed login.
+  invalid-data: The action's own data is wrong or gone: a deleted or missing order, product, customer or post, a missing or malformed value, a duplicate record, or a remote service rejecting the data as invalid (HTTP 400 or 422).
+  code-error: A bug in PHP code: an uncaught error or exception, a call to an undefined function or method, a type error, a syntax error, or running out of PHP memory.
+  missing-plugin-or-callback: Nothing handled the hook: no callbacks are registered for it, or the plugin, class or function that should run it is deactivated, deleted or not loaded.
+  other: None of the above, or the error does not say why the actions failed.
+
+g01_retry (noul): Is it safe to run the actions in `groups.g01` again as they are, with the same arguments and without changing any code, data or settings first?
+  yes: The failure came from a temporary condition that has likely passed, such as a timeout, a dropped connection, a rate limit or a service that was briefly down, and running the same actions again would not repeat anything that may already have happened, such as a payment, a refund, a sent email or a created order.
+  no: Running them again unchanged would fail the same way until code, data, credentials or a missing plugin is fixed, or it could repeat a payment, a refund, an email or an order that may already have happened.
+
+g01_urgency (score): How soon should someone deal with the failures in `groups.g01`?
+  0 Can wait: housekeeping or reporting work, such as a cleanup, a cache refresh or an analytics import, with no effect on customers, orders or money.
+  1 Routine: a background task is behind or failing with a small or delayed effect, such as a data sync, a product feed, a report or a newsletter.
+  2 Soon: customers or staff will notice within a day, such as missing order or shipping emails, stock or prices out of sync, orders not reaching another system, or a recurring job that has stopped.
+  3 Now: money, orders or access are affected, such as payments or subscription renewals not taken, orders not created or completed, refunds failing, or customers losing access.
+
+Groups, most frequent first, with the state sent for each (--dry-run --json prints the exact request bodies):
+
+g06  22 failed  example_crm_sync_customer
+     action_group: example-crm
+     error: HTTP 429 Too Many Requests: rate limit exceeded, retry after <n> seconds
+     recurring: no
+     occurrences: dozens of times
+     arguments: different between actions
+     argument_types: {"customer_id":"number"}
+     failed_in_last_24_hours_of_export: no
+
+g05  14 failed  example_webhooks_deliver
+     action_group: example-webhooks
+     error: cURL error 28: Operation timed out after <n> milliseconds with <n> bytes received
+     recurring: no
+     occurrences: dozens of times
+     arguments: different between actions
+     argument_types: {"webhook_id":"number","order_id":"number"}
+     failed_in_last_24_hours_of_export: no
+
+g10  9 failed  example_feed_push_product
+     action_group: example-feed
+     error: cURL error 7: Failed to connect to feeds.example.com port <n> after <n> ms: Couldn't connect to server
+     recurring: no
+     occurrences: a few times
+     arguments: different between actions
+     argument_types: ["number"]
+     failed_in_last_24_hours_of_export: no
+
+g01  8 failed  example_mailer_send_receipt
+     action_group: example-mailer
+     error: SMTP Error: Could not authenticate.
+     recurring: no
+     occurrences: a few times
+     arguments: different between actions
+     argument_types: {"order_id":"number","email":"text"}
+     failed_in_last_24_hours_of_export: yes
+
+g02  6 failed  example_gateway_capture_payment
+     action_group: example-gateway
+     error: Gateway request timed out after <n> seconds while capturing payment for order #<id> of <amount>
+     recurring: no
+     occurrences: a few times
+     arguments: different between actions
+     argument_types: {"order_id":"number","amount":"text","currency":"text"}
+     failed_in_last_24_hours_of_export: yes
+
+g08  5 failed  example_reports_rebuild
+     action_group: example-reports
+     error: array_merge(): Argument #2 must be of type array, null given
+     recurring: yes
+     occurrences: a few times
+     arguments: the same for every action
+     failed_in_last_24_hours_of_export: no
+     recurring_schedule_stopped: yes: Action Scheduler stopped scheduling this recurring action after repeated failures
+
+g11  5 failed  example_stock_import_update
+     action_group: example-importer
+     error: Product <id> not found
+     recurring: no
+     occurrences: a few times
+     arguments: different between actions
+     argument_types: {"sku":"text","product_id":"number","quantity":"number"}
+     failed_in_last_24_hours_of_export: no
+
+g03  4 failed  example_loyalty_award_points
+     action_group: example-loyalty
+     error: Timed out: the action was still running after <n> seconds and Action Scheduler marked it as failed.
+     recurring: no
+     occurrences: a few times
+     arguments: different between actions
+     argument_types: {"order_id":"number","points":"number"}
+     failed_in_last_24_hours_of_export: yes
+
+g07  4 failed  example_rates_refresh
+     action_group: example-rates
+     error: Rates API returned HTTP 503 Service Unavailable from https://rates.example.com/v2/latest?<query>
+     recurring: yes
+     occurrences: a few times
+     arguments: the same for every action
+     failed_in_last_24_hours_of_export: no
+
+g09  4 failed  example_newsletter_subscribe
+     action_group: example-newsletter
+     error: Invalid email address: <email> rejected by list <id>
+     recurring: no
+     occurrences: a few times
+     arguments: different between actions
+     argument_types: {"email":"text","list_id":"number","source":"text"}
+     failed_in_last_24_hours_of_export: no
+
+g04  3 failed  example_invoices_generate_pdf
+     action_group: example-invoices
+     error: PHP Fatal error Allowed memory size of <n> bytes exhausted (tried to allocate <n> bytes) in wp-content/plugins/example-invoices/vendor/example/pdf/src/Renderer.php on line <n>
+     recurring: no
+     occurrences: a few times
+     arguments: different between actions
+     argument_types: {"order_id":"number"}
+     failed_in_last_24_hours_of_export: no
+
+g12  3 failed  example_legacy_cleanup
+     error: Scheduled action for example_legacy_cleanup will not be executed as no callbacks are registered.
+     recurring: no
+     occurrences: a few times
+     arguments: the same for every action
+     failed_in_last_24_hours_of_export: no
+
+2 past-due groups are listed in the report and never sent.

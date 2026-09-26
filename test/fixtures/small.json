@@ -1,0 +1,100 @@
+[
+  {
+    "id": 11,
+    "hook": "example_sync_order",
+    "status": "failed",
+    "group": "example-sync",
+    "recurring": "no",
+    "scheduled_date": "2026-09-24 10:00:00 +0000",
+    "args": { "order_id": 501, "email": "pat@example.com" },
+    "log_entries": [
+      { "date": "2026-09-24 09:59:00 +0000", "message": "action created" },
+      { "date": "2026-09-24 10:00:05 +0000", "message": "action started via WP Cron" },
+      {
+        "date": "2026-09-24 10:00:16 +0000",
+        "message": "action failed via WP Cron: cURL error 28: Operation timed out after 10001 milliseconds with 0 bytes received from https://api.example.com/v1/orders?token=abc123"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "hook": "example_sync_order",
+    "status": "failed",
+    "group": "example-sync",
+    "recurring": "no",
+    "scheduled_date": "2026-09-24 12:00:00 +0200",
+    "args": { "order_id": 502, "email": "lee@example.org" },
+    "log_entries": [
+      { "date": "2026-09-24 12:00:00 +0200", "message": "action created" },
+      { "date": "2026-09-24 12:30:05 +0200", "message": "action started via Async Request" },
+      {
+        "date": "2026-09-24 12:30:16 +0200",
+        "message": "action failed via Async Request: cURL error 28: Operation timed out after 10004 milliseconds with 0 bytes received from https://api.example.com/v1/orders?token=def456"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "hook": "example_render_report",
+    "status": "failed",
+    "group": "example-report",
+    "recurring": "yes",
+    "scheduled_date": "2026-09-23 03:00:00 +0000",
+    "args": [],
+    "log_entries": [
+      { "date": "2026-09-23 03:00:01 +0000", "message": "action started via WP Cron" },
+      {
+        "date": "2026-09-23 03:00:02 +0000",
+        "message": "unexpected shutdown: PHP Fatal error Uncaught Error: Call to undefined function example_missing() in /home/site/public_html/wp-content/plugins/example-report/report.php:12\nStack trace:\n#0 {main}\n  thrown in /home/site/public_html/wp-content/plugins/example-report/report.php on line 12"
+      },
+      { "date": "2026-09-23 03:00:02 +0000", "message": "This action appears to be consistently failing. A new instance will not be scheduled." }
+    ]
+  },
+  {
+    "id": 14,
+    "hook": "example_notify_customer",
+    "status": "failed",
+    "group": "",
+    "recurring": "no",
+    "scheduled_date": "2026-09-25 08:00:00 +0000",
+    "args": { "customer_id": 7, "phone": "+1 555 010 0199" },
+    "log_entries": [
+      { "date": "2026-09-25 08:00:03 +0000", "message": "action started via WP Cron" },
+      {
+        "date": "2026-09-25 08:00:04 +0000",
+        "message": "action failed via WP Cron: Customer 7 has no email address on file (jo@example.com was removed on 2026-09-20 10:15:00)"
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "hook": "example_sync_order",
+    "status": "pending",
+    "group": "example-sync",
+    "recurring": "no",
+    "scheduled_date": "2026-09-25 10:00:00 +0000",
+    "args": { "order_id": 503 },
+    "log_entries": [{ "date": "2026-09-25 09:59:00 +0000", "message": "action created" }]
+  },
+  {
+    "id": 16,
+    "hook": "example_sync_order",
+    "status": "complete",
+    "group": "example-sync",
+    "recurring": "no",
+    "scheduled_date": "2026-09-25 11:00:00 +0000",
+    "args": { "order_id": 504 },
+    "log_entries": []
+  },
+  {
+    "id": 12,
+    "hook": "example_sync_order",
+    "status": "failed",
+    "group": "example-sync",
+    "recurring": "no",
+    "scheduled_date": "2026-09-24 12:00:00 +0200",
+    "args": { "order_id": 502, "email": "lee@example.org" },
+    "log_entries": []
+  },
+  { "id": 17, "status": "failed" }
+]

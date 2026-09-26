@@ -1,0 +1,871 @@
+{
+  "tool": "action-scheduler-triage",
+  "version": "1.0.0",
+  "files": [
+    "examples/failed-actions.json",
+    "examples/past-due-actions.json"
+  ],
+  "actions_read": 97,
+  "failed": 87,
+  "past_due": 9,
+  "skipped_statuses": {
+    "canceled": 1
+  },
+  "entries_without_hook": 0,
+  "duplicates": 0,
+  "status_missing": 0,
+  "failed_without_message": 0,
+  "ungrouped_failures": 0,
+  "first_failed": "2026-09-18T03:10:08Z",
+  "last_failed": "2026-09-25T18:30:18Z",
+  "model": "fixture",
+  "requests": 1,
+  "usage": {
+    "input_tokens": 13592,
+    "output_tokens": 0
+  },
+  "threshold": 0.8,
+  "groups_total": 12,
+  "retry": 3,
+  "fix_first": 7,
+  "review": 2,
+  "groups": [
+    {
+      "id": "g02",
+      "decision": "fix-first",
+      "review_reasons": [],
+      "urgency": {
+        "label": "now",
+        "level": 3,
+        "score": 2.94,
+        "confidence": 0.92,
+        "probabilities": {
+          "0": 0,
+          "1": 0,
+          "2": 0.06,
+          "3": 0.94
+        }
+      },
+      "cause": {
+        "choice": "transient-network-or-timeout",
+        "confidence": 0.9,
+        "probabilities": {
+          "transient-network-or-timeout": 0.91,
+          "rate-limited": 0.02,
+          "credentials-or-auth": 0,
+          "invalid-data": 0,
+          "code-error": 0.02,
+          "missing-plugin-or-callback": 0,
+          "other": 0.05
+        }
+      },
+      "safe_to_run_again": 0.08,
+      "hook": "example_gateway_capture_payment",
+      "action_groups": [
+        "example-gateway"
+      ],
+      "error": "Gateway request timed out after <n> seconds while capturing payment for order #<id> of <amount>",
+      "failure_kind": "exception",
+      "count": 6,
+      "recurring": "no",
+      "recurring_schedule_stopped": false,
+      "distinct_arguments": 6,
+      "first_failed": "2026-09-25T14:02:02Z",
+      "last_failed": "2026-09-25T15:47:02Z",
+      "action_ids": [
+        4155,
+        4154,
+        4153,
+        4152,
+        4151,
+        4150
+      ],
+      "example_arguments": [
+        {
+          "order_id": 1077,
+          "amount": "12.00",
+          "currency": "USD"
+        },
+        {
+          "order_id": 1070,
+          "amount": "75.25",
+          "currency": "USD"
+        },
+        {
+          "order_id": 1062,
+          "amount": "240.00",
+          "currency": "USD"
+        }
+      ],
+      "what_to_check": "The failure looks temporary, but a rerun could repeat work that may already have happened. Check the other system (the payment gateway, the mail log, the receiving service) before running these again."
+    },
+    {
+      "id": "g01",
+      "decision": "fix-first",
+      "review_reasons": [],
+      "urgency": {
+        "label": "soon",
+        "level": 2,
+        "score": 2.02,
+        "confidence": 0.76,
+        "probabilities": {
+          "0": 0,
+          "1": 0.08,
+          "2": 0.82,
+          "3": 0.1
+        }
+      },
+      "cause": {
+        "choice": "credentials-or-auth",
+        "confidence": 0.94,
+        "probabilities": {
+          "transient-network-or-timeout": 0.03,
+          "rate-limited": 0,
+          "credentials-or-auth": 0.95,
+          "invalid-data": 0,
+          "code-error": 0,
+          "missing-plugin-or-callback": 0,
+          "other": 0.02
+        }
+      },
+      "safe_to_run_again": 0.06,
+      "hook": "example_mailer_send_receipt",
+      "action_groups": [
+        "example-mailer"
+      ],
+      "error": "SMTP Error: Could not authenticate.",
+      "failure_kind": "exception",
+      "count": 8,
+      "recurring": "no",
+      "recurring_schedule_stopped": false,
+      "distinct_arguments": 8,
+      "first_failed": "2026-09-21T10:00:18Z",
+      "last_failed": "2026-09-25T18:30:18Z",
+      "action_ids": [
+        4163,
+        4162,
+        4161,
+        4160,
+        4159,
+        4158,
+        4157,
+        4156
+      ],
+      "example_arguments": [
+        {
+          "order_id": 997,
+          "email": "<masked>"
+        },
+        {
+          "order_id": 996,
+          "email": "<masked>"
+        },
+        {
+          "order_id": 995,
+          "email": "<masked>"
+        }
+      ],
+      "what_to_check": "Renew or re-enter the API key, token, password or license the plugin uses, then run the actions again."
+    },
+    {
+      "id": "g05",
+      "decision": "review",
+      "review_reasons": [
+        "safe to run again 0.64, between 0.20 and 0.80"
+      ],
+      "urgency": {
+        "label": "soon",
+        "level": 2,
+        "score": 1.86,
+        "confidence": 0.6,
+        "probabilities": {
+          "0": 0,
+          "1": 0.22,
+          "2": 0.7,
+          "3": 0.08
+        }
+      },
+      "cause": {
+        "choice": "transient-network-or-timeout",
+        "confidence": 0.92,
+        "probabilities": {
+          "transient-network-or-timeout": 0.93,
+          "rate-limited": 0.02,
+          "credentials-or-auth": 0,
+          "invalid-data": 0,
+          "code-error": 0,
+          "missing-plugin-or-callback": 0,
+          "other": 0.05
+        }
+      },
+      "safe_to_run_again": 0.64,
+      "hook": "example_webhooks_deliver",
+      "action_groups": [
+        "example-webhooks"
+      ],
+      "error": "cURL error 28: Operation timed out after <n> milliseconds with <n> bytes received",
+      "failure_kind": "exception",
+      "count": 14,
+      "recurring": "no",
+      "recurring_schedule_stopped": false,
+      "distinct_arguments": 14,
+      "first_failed": "2026-09-24T09:12:25Z",
+      "last_failed": "2026-09-24T09:58:28Z",
+      "action_ids": [
+        4114,
+        4113,
+        4112,
+        4111,
+        4110,
+        4109,
+        4108,
+        4107,
+        4106,
+        4105,
+        4104,
+        4103,
+        4102,
+        4101
+      ],
+      "example_arguments": [
+        {
+          "webhook_id": 3,
+          "order_id": 1053
+        },
+        {
+          "webhook_id": 3,
+          "order_id": 1052
+        },
+        {
+          "webhook_id": 3,
+          "order_id": 1051
+        }
+      ]
+    },
+    {
+      "id": "g08",
+      "decision": "fix-first",
+      "review_reasons": [],
+      "urgency": {
+        "label": "routine",
+        "level": 1,
+        "score": 1.35,
+        "confidence": 0.4,
+        "probabilities": {
+          "0": 0.05,
+          "1": 0.55,
+          "2": 0.4,
+          "3": 0
+        }
+      },
+      "cause": {
+        "choice": "code-error",
+        "confidence": 0.97,
+        "probabilities": {
+          "transient-network-or-timeout": 0,
+          "rate-limited": 0,
+          "credentials-or-auth": 0,
+          "invalid-data": 0.02,
+          "code-error": 0.97,
+          "missing-plugin-or-callback": 0,
+          "other": 0.01
+        }
+      },
+      "safe_to_run_again": 0.03,
+      "hook": "example_reports_rebuild",
+      "action_groups": [
+        "example-reports"
+      ],
+      "error": "array_merge(): Argument #2 must be of type array, null given",
+      "failure_kind": "exception",
+      "count": 5,
+      "recurring": "yes",
+      "recurring_schedule_stopped": true,
+      "distinct_arguments": 1,
+      "first_failed": "2026-09-19T03:00:17Z",
+      "last_failed": "2026-09-23T03:00:02Z",
+      "action_ids": [
+        4173,
+        4172,
+        4171,
+        4170,
+        4169
+      ],
+      "example_arguments": [],
+      "what_to_check": "Find the code that raised the error (the error or the PHP error log names the file and line), fix or update the plugin or theme, and test the callback before running the actions again.",
+      "pending_check": "wp action-scheduler action list --hook=example_reports_rebuild --status=pending --fields=id,scheduled_date"
+    },
+    {
+      "id": "g04",
+      "decision": "fix-first",
+      "review_reasons": [],
+      "urgency": {
+        "label": "routine",
+        "level": 1,
+        "score": 1.3,
+        "confidence": 0.47,
+        "probabilities": {
+          "0": 0.05,
+          "1": 0.6,
+          "2": 0.35,
+          "3": 0
+        }
+      },
+      "cause": {
+        "choice": "code-error",
+        "confidence": 0.86,
+        "probabilities": {
+          "transient-network-or-timeout": 0.07,
+          "rate-limited": 0,
+          "credentials-or-auth": 0,
+          "invalid-data": 0,
+          "code-error": 0.88,
+          "missing-plugin-or-callback": 0,
+          "other": 0.05
+        }
+      },
+      "safe_to_run_again": 0.12,
+      "hook": "example_invoices_generate_pdf",
+      "action_groups": [
+        "example-invoices"
+      ],
+      "error": "PHP Fatal error Allowed memory size of <n> bytes exhausted (tried to allocate <n> bytes) in wp-content/plugins/example-invoices/vendor/example/pdf/src/Renderer.php on line <n>",
+      "failure_kind": "fatal",
+      "count": 3,
+      "recurring": "no",
+      "recurring_schedule_stopped": false,
+      "distinct_arguments": 3,
+      "first_failed": "2026-09-18T11:25:31Z",
+      "last_failed": "2026-09-24T16:50:34Z",
+      "action_ids": [
+        4176,
+        4175,
+        4174
+      ],
+      "example_arguments": [
+        {
+          "order_id": 1025
+        },
+        {
+          "order_id": 1014
+        },
+        {
+          "order_id": 1003
+        }
+      ],
+      "what_to_check": "Find the code that raised the error (the error or the PHP error log names the file and line), fix or update the plugin or theme, and test the callback before running the actions again."
+    },
+    {
+      "id": "g07",
+      "decision": "retry",
+      "review_reasons": [],
+      "urgency": {
+        "label": "routine",
+        "level": 1,
+        "score": 1.22,
+        "confidence": 0.49,
+        "probabilities": {
+          "0": 0.08,
+          "1": 0.62,
+          "2": 0.3,
+          "3": 0
+        }
+      },
+      "cause": {
+        "choice": "transient-network-or-timeout",
+        "confidence": 0.93,
+        "probabilities": {
+          "transient-network-or-timeout": 0.94,
+          "rate-limited": 0.02,
+          "credentials-or-auth": 0,
+          "invalid-data": 0,
+          "code-error": 0,
+          "missing-plugin-or-callback": 0,
+          "other": 0.04
+        }
+      },
+      "safe_to_run_again": 0.93,
+      "hook": "example_rates_refresh",
+      "action_groups": [
+        "example-rates"
+      ],
+      "error": "Rates API returned HTTP 503 Service Unavailable from https://rates.example.com/v2/latest?<query>",
+      "failure_kind": "exception",
+      "count": 4,
+      "recurring": "yes",
+      "recurring_schedule_stopped": false,
+      "distinct_arguments": 1,
+      "first_failed": "2026-09-23T01:00:41Z",
+      "last_failed": "2026-09-23T04:00:10Z",
+      "action_ids": [
+        4149,
+        4148,
+        4147,
+        4146
+      ],
+      "example_arguments": [],
+      "retry_commands": [],
+      "not_copied": [],
+      "pending_check": "wp action-scheduler action list --hook=example_rates_refresh --status=pending --fields=id,scheduled_date"
+    },
+    {
+      "id": "g03",
+      "decision": "review",
+      "review_reasons": [
+        "cause confidence 0.44, below 0.80",
+        "safe to run again 0.35, between 0.20 and 0.80"
+      ],
+      "urgency": {
+        "label": "routine",
+        "level": 1,
+        "score": 1.2,
+        "confidence": 0.6,
+        "probabilities": {
+          "0": 0.05,
+          "1": 0.7,
+          "2": 0.25,
+          "3": 0
+        }
+      },
+      "cause": {
+        "choice": "transient-network-or-timeout",
+        "confidence": 0.44,
+        "probabilities": {
+          "transient-network-or-timeout": 0.52,
+          "rate-limited": 0,
+          "credentials-or-auth": 0,
+          "invalid-data": 0,
+          "code-error": 0.31,
+          "missing-plugin-or-callback": 0,
+          "other": 0.17
+        }
+      },
+      "safe_to_run_again": 0.35,
+      "hook": "example_loyalty_award_points",
+      "action_groups": [
+        "example-loyalty"
+      ],
+      "error": "Timed out: the action was still running after <n> seconds and Action Scheduler marked it as failed.",
+      "failure_kind": "timeout",
+      "count": 4,
+      "recurring": "no",
+      "recurring_schedule_stopped": false,
+      "distinct_arguments": 4,
+      "first_failed": "2026-09-21T19:05:31Z",
+      "last_failed": "2026-09-24T21:05:17Z",
+      "action_ids": [
+        4183,
+        4182,
+        4181,
+        4180
+      ],
+      "example_arguments": [
+        {
+          "order_id": 1026,
+          "points": 50
+        },
+        {
+          "order_id": 1021,
+          "points": 50
+        },
+        {
+          "order_id": 1016,
+          "points": 50
+        }
+      ]
+    },
+    {
+      "id": "g11",
+      "decision": "fix-first",
+      "review_reasons": [],
+      "urgency": {
+        "label": "routine",
+        "level": 1,
+        "score": 1.14,
+        "confidence": 0.65,
+        "probabilities": {
+          "0": 0.06,
+          "1": 0.74,
+          "2": 0.2,
+          "3": 0
+        }
+      },
+      "cause": {
+        "choice": "invalid-data",
+        "confidence": 0.92,
+        "probabilities": {
+          "transient-network-or-timeout": 0,
+          "rate-limited": 0,
+          "credentials-or-auth": 0,
+          "invalid-data": 0.93,
+          "code-error": 0.03,
+          "missing-plugin-or-callback": 0,
+          "other": 0.04
+        }
+      },
+      "safe_to_run_again": 0.05,
+      "hook": "example_stock_import_update",
+      "action_groups": [
+        "example-importer"
+      ],
+      "error": "Product <id> not found",
+      "failure_kind": "exception",
+      "count": 5,
+      "recurring": "no",
+      "recurring_schedule_stopped": false,
+      "distinct_arguments": 5,
+      "first_failed": "2026-09-20T06:00:02Z",
+      "last_failed": "2026-09-20T10:00:02Z",
+      "action_ids": [
+        4168,
+        4167,
+        4166,
+        4165,
+        4164
+      ],
+      "example_arguments": [
+        {
+          "sku": "EX-ITEM-5547",
+          "product_id": 5547,
+          "quantity": 8
+        },
+        {
+          "sku": "EX-ITEM-5540",
+          "product_id": 5540,
+          "quantity": 7
+        },
+        {
+          "sku": "EX-ITEM-5533",
+          "product_id": 5533,
+          "quantity": 6
+        }
+      ],
+      "what_to_check": "Look at the records in the arguments (an order, product or customer that was deleted or changed) and fix or remove them; the same arguments will fail the same way."
+    },
+    {
+      "id": "g06",
+      "decision": "retry",
+      "review_reasons": [],
+      "urgency": {
+        "label": "routine",
+        "level": 1,
+        "score": 1.12,
+        "confidence": 0.79,
+        "probabilities": {
+          "0": 0.02,
+          "1": 0.84,
+          "2": 0.14,
+          "3": 0
+        }
+      },
+      "cause": {
+        "choice": "rate-limited",
+        "confidence": 0.95,
+        "probabilities": {
+          "transient-network-or-timeout": 0.03,
+          "rate-limited": 0.96,
+          "credentials-or-auth": 0,
+          "invalid-data": 0,
+          "code-error": 0,
+          "missing-plugin-or-callback": 0,
+          "other": 0.01
+        }
+      },
+      "safe_to_run_again": 0.91,
+      "hook": "example_crm_sync_customer",
+      "action_groups": [
+        "example-crm"
+      ],
+      "error": "HTTP 429 Too Many Requests: rate limit exceeded, retry after <n> seconds",
+      "failure_kind": "exception",
+      "count": 22,
+      "recurring": "no",
+      "recurring_schedule_stopped": false,
+      "distinct_arguments": 22,
+      "first_failed": "2026-09-24T08:10:16Z",
+      "last_failed": "2026-09-24T08:45:22Z",
+      "action_ids": [
+        4136,
+        4135,
+        4134,
+        4133,
+        4132,
+        4131,
+        4130,
+        4129,
+        4128,
+        4127,
+        4126,
+        4125,
+        4124,
+        4123,
+        4122,
+        4121,
+        4120,
+        4119,
+        4118,
+        4117,
+        4116,
+        4115
+      ],
+      "example_arguments": [
+        {
+          "customer_id": 265
+        },
+        {
+          "customer_id": 258
+        },
+        {
+          "customer_id": 251
+        }
+      ],
+      "retry_commands": [
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":265}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":258}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":251}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":244}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":237}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":230}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":223}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":216}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":209}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":202}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":195}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":188}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":181}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":174}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":167}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":160}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":153}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":146}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":139}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":132}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":125}' --group=example-crm",
+        "wp action-scheduler action create example_crm_sync_customer async --args='{\"customer_id\":118}' --group=example-crm"
+      ],
+      "not_copied": [],
+      "note": "These failed on a rate limit: wait until it resets, then queue them a few at a time."
+    },
+    {
+      "id": "g10",
+      "decision": "retry",
+      "review_reasons": [],
+      "urgency": {
+        "label": "routine",
+        "level": 1,
+        "score": 0.98,
+        "confidence": 0.87,
+        "probabilities": {
+          "0": 0.06,
+          "1": 0.9,
+          "2": 0.04,
+          "3": 0
+        }
+      },
+      "cause": {
+        "choice": "transient-network-or-timeout",
+        "confidence": 0.94,
+        "probabilities": {
+          "transient-network-or-timeout": 0.95,
+          "rate-limited": 0.02,
+          "credentials-or-auth": 0,
+          "invalid-data": 0,
+          "code-error": 0,
+          "missing-plugin-or-callback": 0,
+          "other": 0.03
+        }
+      },
+      "safe_to_run_again": 0.9,
+      "hook": "example_feed_push_product",
+      "action_groups": [
+        "example-feed"
+      ],
+      "error": "cURL error 7: Failed to connect to feeds.example.com port <n> after <n> ms: Couldn't connect to server",
+      "failure_kind": "exception",
+      "count": 9,
+      "recurring": "no",
+      "recurring_schedule_stopped": false,
+      "distinct_arguments": 9,
+      "first_failed": "2026-09-22T02:05:31Z",
+      "last_failed": "2026-09-22T02:40:38Z",
+      "action_ids": [
+        4145,
+        4144,
+        4143,
+        4142,
+        4141,
+        4140,
+        4139,
+        4138,
+        4137
+      ],
+      "example_arguments": [
+        [
+          5509
+        ],
+        [
+          5508
+        ],
+        [
+          5507
+        ]
+      ],
+      "retry_commands": [
+        "wp action-scheduler action create example_feed_push_product async --args='[5509]' --group=example-feed",
+        "wp action-scheduler action create example_feed_push_product async --args='[5508]' --group=example-feed",
+        "wp action-scheduler action create example_feed_push_product async --args='[5507]' --group=example-feed",
+        "wp action-scheduler action create example_feed_push_product async --args='[5506]' --group=example-feed",
+        "wp action-scheduler action create example_feed_push_product async --args='[5505]' --group=example-feed",
+        "wp action-scheduler action create example_feed_push_product async --args='[5504]' --group=example-feed",
+        "wp action-scheduler action create example_feed_push_product async --args='[5503]' --group=example-feed",
+        "wp action-scheduler action create example_feed_push_product async --args='[5502]' --group=example-feed",
+        "wp action-scheduler action create example_feed_push_product async --args='[5501]' --group=example-feed"
+      ],
+      "not_copied": []
+    },
+    {
+      "id": "g09",
+      "decision": "fix-first",
+      "review_reasons": [],
+      "urgency": {
+        "label": "can wait",
+        "level": 0,
+        "score": 0.45,
+        "confidence": 0.4,
+        "probabilities": {
+          "0": 0.55,
+          "1": 0.45,
+          "2": 0,
+          "3": 0
+        }
+      },
+      "cause": {
+        "choice": "invalid-data",
+        "confidence": 0.88,
+        "probabilities": {
+          "transient-network-or-timeout": 0,
+          "rate-limited": 0,
+          "credentials-or-auth": 0.02,
+          "invalid-data": 0.9,
+          "code-error": 0,
+          "missing-plugin-or-callback": 0,
+          "other": 0.08
+        }
+      },
+      "safe_to_run_again": 0.07,
+      "hook": "example_newsletter_subscribe",
+      "action_groups": [
+        "example-newsletter"
+      ],
+      "error": "Invalid email address: <email> rejected by list <id>",
+      "failure_kind": "exception",
+      "count": 4,
+      "recurring": "no",
+      "recurring_schedule_stopped": false,
+      "distinct_arguments": 4,
+      "first_failed": "2026-09-19T12:00:02Z",
+      "last_failed": "2026-09-22T12:00:02Z",
+      "action_ids": [
+        4187,
+        4186,
+        4185,
+        4184
+      ],
+      "example_arguments": [
+        {
+          "email": "<masked>",
+          "list_id": 7,
+          "source": "checkout"
+        }
+      ],
+      "what_to_check": "Look at the records in the arguments (an order, product or customer that was deleted or changed) and fix or remove them; the same arguments will fail the same way."
+    },
+    {
+      "id": "g12",
+      "decision": "fix-first",
+      "review_reasons": [],
+      "urgency": {
+        "label": "can wait",
+        "level": 0,
+        "score": 0.1,
+        "confidence": 0.87,
+        "probabilities": {
+          "0": 0.9,
+          "1": 0.1,
+          "2": 0,
+          "3": 0
+        }
+      },
+      "cause": {
+        "choice": "missing-plugin-or-callback",
+        "confidence": 0.99,
+        "probabilities": {
+          "transient-network-or-timeout": 0,
+          "rate-limited": 0,
+          "credentials-or-auth": 0,
+          "invalid-data": 0,
+          "code-error": 0,
+          "missing-plugin-or-callback": 0.99,
+          "other": 0.01
+        }
+      },
+      "safe_to_run_again": 0.02,
+      "hook": "example_legacy_cleanup",
+      "action_groups": [],
+      "error": "Scheduled action for example_legacy_cleanup will not be executed as no callbacks are registered.",
+      "failure_kind": "exception",
+      "count": 3,
+      "recurring": "no",
+      "recurring_schedule_stopped": false,
+      "distinct_arguments": 1,
+      "first_failed": "2026-09-18T03:10:08Z",
+      "last_failed": "2026-09-20T03:10:23Z",
+      "action_ids": [
+        4179,
+        4178,
+        4177
+      ],
+      "example_arguments": [],
+      "what_to_check": "No code handles this hook now. Reactivate the plugin that registered it, or cancel these actions if that plugin was removed on purpose."
+    }
+  ],
+  "past_due_groups": [
+    {
+      "id": "p01",
+      "hook": "example_crm_sync_customer",
+      "action_groups": [
+        "example-crm"
+      ],
+      "count": 3,
+      "recurring": "no",
+      "first_scheduled": "2026-09-25T22:00:00Z",
+      "last_scheduled": "2026-09-25T22:30:00Z",
+      "action_ids": [
+        4189,
+        4190,
+        4191
+      ],
+      "run_command": "wp action-scheduler run --hooks=example_crm_sync_customer"
+    },
+    {
+      "id": "p02",
+      "hook": "example_search_index_rebuild",
+      "action_groups": [
+        "example-search"
+      ],
+      "count": 6,
+      "recurring": "no",
+      "first_scheduled": "2026-09-25T20:00:00Z",
+      "last_scheduled": "2026-09-25T21:40:00Z",
+      "action_ids": [
+        4192,
+        4193,
+        4194,
+        4195,
+        4196,
+        4197
+      ],
+      "run_command": "wp action-scheduler run --hooks=example_search_index_rebuild"
+    }
+  ]
+}

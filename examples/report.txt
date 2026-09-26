@@ -1,0 +1,168 @@
+action-scheduler-triage 1.0.0
+Input: examples/failed-actions.json, examples/past-due-actions.json
+Actions: 87 failed in 12 groups, 9 past due in 2 groups
+Skipped: 1 action with another status (1 canceled)
+Failed between 2026-09-18 03:10 and 2026-09-25 18:30 UTC
+Jev: model fixture, 1 request, 13,592 input tokens (about $0.00057)
+Threshold 0.80: 3 safe to retry, 7 fix first, 2 for review
+
+Failed groups, most urgent first
+g02  now       fix first  transient-network-or-timeout   6  example_gateway_capture_payment
+g01  soon      fix first  credentials-or-auth            8  example_mailer_send_receipt
+g05  soon      review     transient-network-or-timeout  14  example_webhooks_deliver
+g08  routine   fix first  code-error                     5  example_reports_rebuild
+g04  routine   fix first  code-error                     3  example_invoices_generate_pdf
+g07  routine   retry      transient-network-or-timeout   4  example_rates_refresh
+g03  routine   review     transient-network-or-timeout   4  example_loyalty_award_points
+g11  routine   fix first  invalid-data                   5  example_stock_import_update
+g06  routine   retry      rate-limited                  22  example_crm_sync_customer
+g10  routine   retry      transient-network-or-timeout   9  example_feed_push_product
+g09  can wait  fix first  invalid-data                   4  example_newsletter_subscribe
+g12  can wait  fix first  missing-plugin-or-callback     3  example_legacy_cleanup
+
+Safe to retry, most urgent first
+
+g07  routine  transient-network-or-timeout  4 failed
+     Hook: example_rates_refresh (group example-rates)
+     Error: Rates API returned HTTP 503 Service Unavailable from https://rates.example.com/v2/latest?<query>
+     Failed 2026-09-23 01:00 to 2026-09-23 04:00 UTC; recurring; the same arguments every time
+     Action IDs: 4149, 4148, 4147, 4146
+     Jev: cause transient-network-or-timeout 0.94, other 0.04, rate-limited 0.02; safe to run again 0.93; urgency 1.22 of 3 (routine 0.62, soon 0.30, can wait 0.08)
+     Recurring: the next scheduled run repeats this work, so no commands are printed for it. Check for a pending run: wp action-scheduler action list --hook=example_rates_refresh --status=pending --fields=id,scheduled_date
+
+g06  routine  rate-limited  22 failed
+     Hook: example_crm_sync_customer (group example-crm)
+     Error: HTTP 429 Too Many Requests: rate limit exceeded, retry after <n> seconds
+     Failed 2026-09-24 08:10 to 2026-09-24 08:45 UTC; single actions; different arguments
+     Action IDs: 4136, 4135, 4134, 4133, 4132 and 17 more
+     Example arguments: {"customer_id":265}  {"customer_id":258}  {"customer_id":251}
+     Jev: cause rate-limited 0.96, transient-network-or-timeout 0.03, other 0.01; safe to run again 0.91; urgency 1.12 of 3 (routine 0.84, soon 0.14, can wait 0.02)
+     These failed on a rate limit: wait until it resets, then queue them a few at a time.
+     Commands to run by hand (printed only; this tool never runs them):
+       wp action-scheduler action create example_crm_sync_customer async --args='{"customer_id":265}' --group=example-crm
+       wp action-scheduler action create example_crm_sync_customer async --args='{"customer_id":258}' --group=example-crm
+       wp action-scheduler action create example_crm_sync_customer async --args='{"customer_id":251}' --group=example-crm
+       wp action-scheduler action create example_crm_sync_customer async --args='{"customer_id":244}' --group=example-crm
+       wp action-scheduler action create example_crm_sync_customer async --args='{"customer_id":237}' --group=example-crm
+       wp action-scheduler action create example_crm_sync_customer async --args='{"customer_id":230}' --group=example-crm
+       wp action-scheduler action create example_crm_sync_customer async --args='{"customer_id":223}' --group=example-crm
+       wp action-scheduler action create example_crm_sync_customer async --args='{"customer_id":216}' --group=example-crm
+       wp action-scheduler action create example_crm_sync_customer async --args='{"customer_id":209}' --group=example-crm
+       wp action-scheduler action create example_crm_sync_customer async --args='{"customer_id":202}' --group=example-crm
+       12 more commands in the JSON report (--json).
+
+g10  routine  transient-network-or-timeout  9 failed
+     Hook: example_feed_push_product (group example-feed)
+     Error: cURL error 7: Failed to connect to feeds.example.com port <n> after <n> ms: Couldn't connect to server
+     Failed 2026-09-22 02:05 to 2026-09-22 02:40 UTC; single actions; different arguments
+     Action IDs: 4145, 4144, 4143, 4142, 4141 and 4 more
+     Example arguments: [5509]  [5508]  [5507]
+     Jev: cause transient-network-or-timeout 0.95, other 0.03, rate-limited 0.02; safe to run again 0.90; urgency 0.98 of 3 (routine 0.90, can wait 0.06, soon 0.04)
+     Commands to run by hand (printed only; this tool never runs them):
+       wp action-scheduler action create example_feed_push_product async --args='[5509]' --group=example-feed
+       wp action-scheduler action create example_feed_push_product async --args='[5508]' --group=example-feed
+       wp action-scheduler action create example_feed_push_product async --args='[5507]' --group=example-feed
+       wp action-scheduler action create example_feed_push_product async --args='[5506]' --group=example-feed
+       wp action-scheduler action create example_feed_push_product async --args='[5505]' --group=example-feed
+       wp action-scheduler action create example_feed_push_product async --args='[5504]' --group=example-feed
+       wp action-scheduler action create example_feed_push_product async --args='[5503]' --group=example-feed
+       wp action-scheduler action create example_feed_push_product async --args='[5502]' --group=example-feed
+       wp action-scheduler action create example_feed_push_product async --args='[5501]' --group=example-feed
+
+Fix first, most urgent first
+
+g02  now  transient-network-or-timeout  6 failed
+     Hook: example_gateway_capture_payment (group example-gateway)
+     Error: Gateway request timed out after <n> seconds while capturing payment for order #<id> of <amount>
+     Failed 2026-09-25 14:02 to 2026-09-25 15:47 UTC; single actions; different arguments
+     Action IDs: 4155, 4154, 4153, 4152, 4151 and 1 more
+     Example arguments: {"order_id":1077,"amount":"12.00","currency":"USD"}  {"order_id":1070,"amount":"75.25","currency":"USD"}  {"order_id":1062,"amount":"240.00","currency":"USD"}
+     Jev: cause transient-network-or-timeout 0.91, other 0.05, rate-limited 0.02; safe to run again 0.08; urgency 2.94 of 3 (now 0.94, soon 0.06)
+     What to check: The failure looks temporary, but a rerun could repeat work that may already have happened. Check the other system (the payment gateway, the mail log, the receiving service) before running these again.
+
+g01  soon  credentials-or-auth  8 failed
+     Hook: example_mailer_send_receipt (group example-mailer)
+     Error: SMTP Error: Could not authenticate.
+     Failed 2026-09-21 10:00 to 2026-09-25 18:30 UTC; single actions; different arguments
+     Action IDs: 4163, 4162, 4161, 4160, 4159 and 3 more
+     Example arguments: {"order_id":997,"email":"<masked>"}  {"order_id":996,"email":"<masked>"}  {"order_id":995,"email":"<masked>"}
+     Jev: cause credentials-or-auth 0.95, transient-network-or-timeout 0.03, other 0.02; safe to run again 0.06; urgency 2.02 of 3 (soon 0.82, now 0.10, routine 0.08)
+     What to check: Renew or re-enter the API key, token, password or license the plugin uses, then run the actions again.
+
+g08  routine  code-error  5 failed
+     Hook: example_reports_rebuild (group example-reports)
+     Error: array_merge(): Argument #2 must be of type array, null given
+     Failed 2026-09-19 03:00 to 2026-09-23 03:00 UTC; recurring; the same arguments every time; Action Scheduler stopped scheduling it after repeated failures
+     Action IDs: 4173, 4172, 4171, 4170, 4169
+     Jev: cause code-error 0.97, invalid-data 0.02, other 0.01; safe to run again 0.03; urgency 1.35 of 3 (routine 0.55, soon 0.40, can wait 0.05)
+     What to check: Find the code that raised the error (the error or the PHP error log names the file and line), fix or update the plugin or theme, and test the callback before running the actions again.
+     After the fix, check that it is scheduled again: wp action-scheduler action list --hook=example_reports_rebuild --status=pending --fields=id,scheduled_date
+
+g04  routine  code-error  3 failed
+     Hook: example_invoices_generate_pdf (group example-invoices)
+     Error: PHP Fatal error Allowed memory size of <n> bytes exhausted (tried to allocate <n> bytes) in wp-content/plugins/example-invoices/vendor/example/pdf/src/Renderer.php on line <n>
+     Failed 2026-09-18 11:25 to 2026-09-24 16:50 UTC; single actions; different arguments
+     Action IDs: 4176, 4175, 4174
+     Example arguments: {"order_id":1025}  {"order_id":1014}  {"order_id":1003}
+     Jev: cause code-error 0.88, transient-network-or-timeout 0.07, other 0.05; safe to run again 0.12; urgency 1.30 of 3 (routine 0.60, soon 0.35, can wait 0.05)
+     What to check: Find the code that raised the error (the error or the PHP error log names the file and line), fix or update the plugin or theme, and test the callback before running the actions again.
+
+g11  routine  invalid-data  5 failed
+     Hook: example_stock_import_update (group example-importer)
+     Error: Product <id> not found
+     Failed 2026-09-20 06:00 to 2026-09-20 10:00 UTC; single actions; different arguments
+     Action IDs: 4168, 4167, 4166, 4165, 4164
+     Example arguments: {"sku":"EX-ITEM-5547","product_id":5547,"quantity":8}  {"sku":"EX-ITEM-5540","product_id":5540,"quantity":7}  {"sku":"EX-ITEM-5533","product_id":5533,"quantity":6}
+     Jev: cause invalid-data 0.93, other 0.04, code-error 0.03; safe to run again 0.05; urgency 1.14 of 3 (routine 0.74, soon 0.20, can wait 0.06)
+     What to check: Look at the records in the arguments (an order, product or customer that was deleted or changed) and fix or remove them; the same arguments will fail the same way.
+
+g09  can wait  invalid-data  4 failed
+     Hook: example_newsletter_subscribe (group example-newsletter)
+     Error: Invalid email address: <email> rejected by list <id>
+     Failed 2026-09-19 12:00 to 2026-09-22 12:00 UTC; single actions; different arguments
+     Action IDs: 4187, 4186, 4185, 4184
+     Example arguments: {"email":"<masked>","list_id":7,"source":"checkout"}
+     Jev: cause invalid-data 0.90, other 0.08, credentials-or-auth 0.02; safe to run again 0.07; urgency 0.45 of 3 (can wait 0.55, routine 0.45)
+     What to check: Look at the records in the arguments (an order, product or customer that was deleted or changed) and fix or remove them; the same arguments will fail the same way.
+
+g12  can wait  missing-plugin-or-callback  3 failed
+     Hook: example_legacy_cleanup
+     Error: Scheduled action for example_legacy_cleanup will not be executed as no callbacks are registered.
+     Failed 2026-09-18 03:10 to 2026-09-20 03:10 UTC; single actions; the same arguments every time
+     Action IDs: 4179, 4178, 4177
+     Jev: cause missing-plugin-or-callback 0.99, other 0.01; safe to run again 0.02; urgency 0.10 of 3 (can wait 0.90, routine 0.10)
+     What to check: No code handles this hook now. Reactivate the plugin that registered it, or cancel these actions if that plugin was removed on purpose.
+
+For review, most urgent first (an unsure or missing answer, or answers that disagree)
+
+g05  soon  transient-network-or-timeout  14 failed
+     Hook: example_webhooks_deliver (group example-webhooks)
+     Error: cURL error 28: Operation timed out after <n> milliseconds with <n> bytes received
+     Failed 2026-09-24 09:12 to 2026-09-24 09:58 UTC; single actions; different arguments
+     Action IDs: 4114, 4113, 4112, 4111, 4110 and 9 more
+     Example arguments: {"webhook_id":3,"order_id":1053}  {"webhook_id":3,"order_id":1052}  {"webhook_id":3,"order_id":1051}
+     Jev: cause transient-network-or-timeout 0.93, other 0.05, rate-limited 0.02; safe to run again 0.64; urgency 1.86 of 3 (soon 0.70, routine 0.22, now 0.08)
+     Review: safe to run again 0.64, between 0.20 and 0.80.
+
+g03  routine  transient-network-or-timeout  4 failed
+     Hook: example_loyalty_award_points (group example-loyalty)
+     Error: Timed out: the action was still running after <n> seconds and Action Scheduler marked it as failed.
+     Failed 2026-09-21 19:05 to 2026-09-24 21:05 UTC; single actions; different arguments
+     Action IDs: 4183, 4182, 4181, 4180
+     Example arguments: {"order_id":1026,"points":50}  {"order_id":1021,"points":50}  {"order_id":1016,"points":50}
+     Jev: cause transient-network-or-timeout 0.52, code-error 0.31, other 0.17; safe to run again 0.35; urgency 1.20 of 3 (routine 0.70, soon 0.25, can wait 0.05)
+     Review: cause confidence 0.44, below 0.80; safe to run again 0.35, between 0.20 and 0.80.
+
+Past due: pending actions whose time has passed (not sent to Jev)
+
+p01  example_crm_sync_customer  3 pending
+     Group example-crm; scheduled 2026-09-25 22:00 to 2026-09-25 22:30 UTC
+     Action IDs: 4189, 4190, 4191
+     To run them now by hand (printed only): wp action-scheduler run --hooks=example_crm_sync_customer
+
+p02  example_search_index_rebuild  6 pending
+     Group example-search; scheduled 2026-09-25 20:00 to 2026-09-25 21:40 UTC
+     Action IDs: 4192, 4193, 4194, 4195, 4196 and 1 more
+     To run them now by hand (printed only): wp action-scheduler run --hooks=example_search_index_rebuild
+
+Pending actions past their time usually mean the queue runner is not keeping up: WP-Cron not running, loopback requests failing, or a long backlog. `wp action-scheduler status` shows the runner and the size of the queue.
