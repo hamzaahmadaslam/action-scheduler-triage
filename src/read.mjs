@@ -85,7 +85,7 @@ export function normalizeAction(item) {
 
 /** The JSON value in a file, skipping any lines printed before it. Throws an Error that says what is wrong. */
 export function parseJson(text) {
-  const body = text.replace(/^﻿/, "");
+  const body = text.replace(/^\uFEFF/, "");
   try {
     return JSON.parse(body);
   } catch {
