@@ -51,7 +51,7 @@ from fixed text in this tool.
 ## Install
 
 ```sh
-npm install -g github:hamzaahmadaslam/action-scheduler-triage
+npm install -g @hamzaahmadaslam/action-scheduler-triage
 ```
 
 It needs Node 20 or later and installs no other packages.
